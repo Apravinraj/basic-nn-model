@@ -6,11 +6,12 @@ To develop a neural network regression model for the given dataset.
 
 ## THEORY
 
-Explain the problem statement
+Developing a neural network regression model entails a structured process, encompassing phases such as data acquisition, preprocessing, feature selection, model architecture determination, training, hyperparameter optimization, performance evaluation, and deployment, followed by ongoing monitoring for refinement.
 
 ## Neural Network Model
 
-Include the neural network model diagram.
+![image](https://github.com/user-attachments/assets/b868e4cd-4c1a-432b-a8d2-af7f44e57f15)
+
 
 ## DESIGN STEPS
 
@@ -45,18 +46,16 @@ Evaluate the model with the testing data.
 ## PROGRAM
 ### Name: Pravin Raj A
 ### Register Number: 212222240079
+
 ```python
+import pandas as pd
+import tensorflow
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-
-AI_squad=Sequential([
-    Dense(units=9,activation='relu',input_shape=[8]),
-    Dense(units=9,activation='relu'),
-    Dense(units=9,activation='relu')
-])
-
-AI_squad.summary()
-
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+```
+```python
 from google.colab import auth
 import gspread
 from google.auth import default
@@ -67,74 +66,62 @@ auth.authenticate_user()
 creds, _ = default()
 gc = gspread.authorize(creds)
 
+ws = gc.open('data1').sheet1
 
-worksheet = gc.open('excel').sheet1
-
-
-rows = worksheet.get_all_values()
-
-
+rows = ws.get_all_values()
+```
+```python
 df = pd.DataFrame(rows[1:], columns=rows[0])
-df = df.astype({'mark':'int'})
+df = df.astype({'sno':'float'})
+df = df.astype({'marks':'float'})
 df.head()
 
-import pandas as pd
-from sklearn.model_selection import train_test_split
+x = df[["sno"]].values
+y = df[["marks"]].values
+```
+```python
+x_train,x_test,y_train,y_test = train_test_split(x,y,test_size = 0.33,random_state = 33)
+scaler = MinMaxScaler()
+scaler.fit(x_train)
+x_train1 = scaler.transform(x_train)
+```
+```python
+marks_data = Sequential([Dense(6,activation='relu'),Dense(7,activation='relu'),Dense(1)])
+marks_data.compile(optimizer = 'rmsprop' , loss = 'mse')
 
-x=df[['roll_no']].values
-y=df[['mark']].values
+marks_data.fit(x_train1 , y_train,epochs = 500)
 
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split
-
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense
-
-x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2)
-
-Scaler = MinMaxScaler()
-Scaler.fit(x_train)
-x_train=Scaler.transform(x_train)
-x_test=Scaler.transform(x_test)
-
-AI_squad=Sequential([
-    Dense(units=9,activation='relu',input_shape=[1]),
-    Dense(units=9,activation='relu'),
-    Dense(units=9,activation='relu')
-])
-
-AI_squad.compile(optimizer = 'rmsprop', loss= 'mse')
-AI_squad.fit(x_train,y_train,epochs=100)
-
-loss_df = pd.DataFrame(AI_squad.history.history)
+loss_df = pd.DataFrame(marks_data.history.history)
 loss_df.plot()
 
-x_test1 = Scaler.transform(x_test)
-AI_squad.evaluate(x_test1,y_test)
-n_n1_1=Scaler.transform([[1]])
-AI_squad.predict(n_n1_1)
+x_test1 = scaler.transform(x_test)
+marks_data.evaluate(x_test1,y_test)
+
+X_n1 = [[30]]
+X_n1_1 = scaler.transform(X_n1)
+marks_data.predict(X_n1_1)
 ```
+## Dataset Information
+
+![Screenshot 2024-09-22 175552](https://github.com/user-attachments/assets/86599e84-b686-4683-bee0-bfd9c8e4b6f4)
 
 ## OUTPUT
 
-## Dataset Information
-![Screenshot 2024-09-01 144812](https://github.com/user-attachments/assets/2f142502-bba2-4831-9a3b-1bbadf95cf2d)
-
-![Screenshot 2024-09-01 160900](https://github.com/user-attachments/assets/6cb84bbc-6ca7-4604-9d6e-1488dcc36d67)
-
-
 ### Training Loss Vs Iteration Plot
-![Screenshot 2024-09-01 160941](https://github.com/user-attachments/assets/4effaad7-2ed5-4efe-ae4e-aa5a2c6f4975)
+
+![Screenshot 2024-09-22 175648](https://github.com/user-attachments/assets/c949fb6a-576b-47b3-996c-86dcbd944ac2)
 
 
 ### Test Data Root Mean Squared Error
-![Screenshot 2024-09-01 161014](https://github.com/user-attachments/assets/a7a23616-5b64-4da1-b054-884cb303d683)
+
+![Screenshot 2024-09-22 175853](https://github.com/user-attachments/assets/6951b9d9-a2ab-445a-b7a8-a6a7fe404bee)
 
 
 ### New Sample Data Prediction
 
-![Screenshot 2024-09-01 161027](https://github.com/user-attachments/assets/8ae674b4-d5df-4222-897b-f1a91b9b3608)
+![Screenshot 2024-09-22 175927](https://github.com/user-attachments/assets/a63764fe-2015-4a1c-8cbd-af301e5947b6)
+
 
 ## RESULT
 
-Thus a neural network regression model for the given dataset is developed and the prediction for the given input is obtained accurately.
+Thus the program executed successfully
